@@ -1,0 +1,1 @@
+clang++ riemann.cpp main.cpp -o riemann -arch x86_64

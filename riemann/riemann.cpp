@@ -1,7 +1,7 @@
 #ifndef _RIEMANN_CPP
 #define _RIEMANN_CPP
 
-#include "riemann.hpp"
+#include "riemann.h"
 
 // =======================
 // CRiemannSolverEulerBase
@@ -15,7 +15,7 @@ CRiemannSolverEulerBase::CRiemannSolverEulerBase(const double& _dl,
 						 const double& _pr,
 						 const double& _gamma) : dl(_dl), ul(_ul), pl(_pl), dr(_dr), ur(_ur), pr(_pr), gamma(_gamma) {}
 
-//CRiemannSolverEulerBase::~CRiemannSolverEulerBase() {}
+CRiemannSolverEulerBase::~CRiemannSolverEulerBase() {}
 
 void CRiemannSolverEulerBase::computeGammaConstants() {
   g1 = (gamma - 1.0)/(2.0*gamma);
@@ -26,7 +26,7 @@ void CRiemannSolverEulerBase::computeGammaConstants() {
   g6 = (gamma - 1.0)/(gamma + 1.0);
   g7 = (gamma - 1.0)/2.0;
   g8 = gamma - 1.0;
-  }
+}
 
 void CRiemannSolverEulerBase::sampleWaveSolution(const double& s,
 						 double& d,
@@ -263,6 +263,6 @@ void CRiemannSolverEulerExact::testSolver(const int& domlen,
   }
 
   outfile.close();
-  }
+}
 
 #endif

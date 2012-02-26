@@ -1,4 +1,4 @@
-#include "riemann.hpp"
+#include "riemann.h"
 
 int main() {
   CRiemannSolverEulerExact rs = CRiemannSolverEulerExact(1.0, 0.0, 1.0, 0.125, 0.0, 0.1, 1.4);

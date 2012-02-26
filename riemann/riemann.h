@@ -1,5 +1,5 @@
-#ifndef _RIEMANN_HPP
-#define _RIEMANN_HPP
+#ifndef _RIEMANN_H
+#define _RIEMANN_H
 
 #include <iostream>
 #include <fstream>
@@ -36,8 +36,8 @@ public:
 			  const double& timeout) = 0;   // Output time
 			  };
 
-class CRiemannSolverEulerExact: public CRiemannSolverEulerBase {
-private:
+class CRiemannSolverEulerExact : public CRiemannSolverEulerBase {
+protected:
 
   // Sound speeds
   double cl;

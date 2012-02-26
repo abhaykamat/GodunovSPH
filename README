@@ -1,4 +1,4 @@
-GodunovSPH is a Computational Fluid Dynamics library for modelling compressible flows in physics and engineering. In particular, it enables numerical experimentation in aeronautics, astronautics and astrophysics. 
+GodunovSPH is a Computational Fluid Dynamics library for modelling compressible flows in physics and engineering. In particular, it enables numerical experimentation in aeronautics, astronautics and astrophysics. It is based on a Generalsed Riemann Solver/Godunov Finite Volume Algorithm for shocks as well as Smooth Particle Hydronamics for astrophysical flow modelling.
 
 Languages:
 
@@ -8,7 +8,12 @@ Languages:
 Roadmap:
 
  * A RiemannSolver abstract base class will be created first
- * An 'exact' solver, plus approximate solvers, and HLLC/HLLE will be added
+ * An 'exact' solver, plus approximate solvers, and HLLC/HLLE solvers will be added
  * For second order schemes, a Generalised Riemann Problem (GRP) solver will be constructed (based on Ben-Artzi and Falcovitz)
  * A 2D second order Godunov scheme, using structured meshes, will be constructed to test the Riemann solvers
- * Once the Godunov solvers are considered robust, a Smoothed Particle Hydrodynamics implementation will begin
+ * An unstructured mesh finite volume scheme will then be created to test the GRP on irregular geometries
+ * A smoothed particle hydrodynamics code will be implemented that will utilise the GRP for flow discontinuities (shocks/contact discontinuities)
+
+Current status (26/02/2012):
+
+ * Completed 1D CRiemannSolverEulerBase and CRiemannSolverEulerExact, although comments and explanation need to be added.
