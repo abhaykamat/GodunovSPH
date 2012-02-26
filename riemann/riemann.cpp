@@ -236,9 +236,9 @@ void CRiemannSolverEulerExact::sampleWaveSolution(const double& s,
 }
 
 void CRiemannSolverEulerExact::testSolver(const int& domlen,
-					  const double&diaph,
+					  const double& diaph,
 					  const int& cells,
-					  const double&timeout) {
+					  const double& timeout) {
   computeGammaConstants();
   computeSoundSpeeds();
   bool ppc = testForVacuum();
@@ -255,8 +255,8 @@ void CRiemannSolverEulerExact::testSolver(const int& domlen,
   double x_pos, s, ds, us, ps;
 
   for (double i = 0; i < cells; i+=1.0) {
-    double x_pos = ((i+1.0) - 0.5)*dx;
-    double s = (x_pos - diaph)/timeout;
+    x_pos = ((i+1.0) - 0.5)*dx;
+    s = (x_pos - diaph)/timeout;
 
     sampleWaveSolution(s, ds, us, ps);
     outfile << x_pos << "\t" << ds << "\t" << us << "\t" << ps << endl;
