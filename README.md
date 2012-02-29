@@ -7,7 +7,7 @@ GodunovSPH is a Computational Fluid Dynamics library for modelling compressible 
 * The core solver routines will be writtin C++
 * Depending upon complexity, pre- and post-analysis data manipulation will be written in Python
 
-Roadmap:
+## Roadmap
 
 * Create CRiemannSolverEulerBase abstract base class to be inherited by all subsequent Riemann solver objects, based on Euler equations of gas dynamics
 * Create an exact Riemann solver (CRiemannSolverEulerExact) for the one-dimensional Euler equations based on Chapter 4 of [1], providing a testing capability
