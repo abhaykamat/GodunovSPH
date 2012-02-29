@@ -4,7 +4,7 @@ GodunovSPH is a Computational Fluid Dynamics library for modelling compressible 
 
 ## Languages
 
-* The core solver routines will be writtin C++
+* The core solver routines will be written in C++
 * Depending upon complexity, pre- and post-analysis data manipulation will be written in Python
 
 ## Roadmap
