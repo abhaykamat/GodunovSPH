@@ -7,13 +7,8 @@
 // CRiemannSolverEulerBase
 // =======================
 
-CRiemannSolverEulerBase::CRiemannSolverEulerBase(const double& _dl,
-						 const double& _ul,
-						 const double& _pl,
-						 const double& _dr,
-						 const double& _ur,
-						 const double& _pr,
-						 const double& _gamma) : dl(_dl), ul(_ul), pl(_pl), dr(_dr), ur(_ur), pr(_pr), gamma(_gamma) {}
+CRiemannSolverEulerBase::CRiemannSolverEulerBase(const double& _dl, const double& _ul, const double& _pl, const double& _dr, const double& _ur, const double& _pr, const double& _gamma)
+						 : dl(_dl), ul(_ul), pl(_pl), dr(_dr), ur(_ur), pr(_pr), gamma(_gamma) {}
 
 CRiemannSolverEulerBase::~CRiemannSolverEulerBase() {}
 
@@ -28,27 +23,16 @@ void CRiemannSolverEulerBase::computeGammaConstants() {
   g8 = gamma - 1.0;
 }
 
-void CRiemannSolverEulerBase::sampleWaveSolution(const double& s,
-						 double& d,
-						 double& u,
-						 double& p) {}
+void CRiemannSolverEulerBase::sampleWaveSolution(const double& s, double& d, double& u, double& p) {}
 
-void CRiemannSolverEulerBase::testSolver(const int& domlen,
-					 const double& diaph,
-					 const int& cells,
-					 const double& timeout) {}
+void CRiemannSolverEulerBase::testSolver(const int& domlen, const double& diaph, const int& cells, const double& timeout) {}
 
 // ========================
 // CRiemannSolverEulerExact
 // ========================
 
-CRiemannSolverEulerExact::CRiemannSolverEulerExact(const double& _dl,
-						   const double& _ul,
-						   const double& _pl,
-						   const double& _dr,
-						   const double& _ur,
-						   const double& _pr,
-						   const double& _gamma) : CRiemannSolverEulerBase(_dl, _ul, _pl, _dr, _ur, _pr, _gamma) {}
+CRiemannSolverEulerExact::CRiemannSolverEulerExact(const double& _dl, const double& _ul, const double& _pl, const double& _dr, const double& _ur, const double& _pr,const double& _gamma)
+						   : CRiemannSolverEulerBase(_dl, _ul, _pl, _dr, _ur, _pr, _gamma) {}
 
 CRiemannSolverEulerExact::~CRiemannSolverEulerExact() {}
 
@@ -64,12 +48,7 @@ bool CRiemannSolverEulerExact::testForVacuum() {
   return false;
 }
 
-void CRiemannSolverEulerExact::computePressureFunction(double& f,
-						       double& fd,
-						       const double& p,
-						       const double& dk,
-						       const double& pk,
-						       const double& ck) {
+void CRiemannSolverEulerExact::computePressureFunction(double& f, double& fd, const double& p, const double& dk, const double& pk, const double& ck) {
   if (p <= pk) {   // Rarefaction wave
     double prat = p/pk;
     f = g4 * ck * (pow(prat, g1) - 1.0);
@@ -145,10 +124,7 @@ void CRiemannSolverEulerExact::computePressureVelocityStar() {
   um = 0.5*(ul + ur + fr - fl);
 }
 
-void CRiemannSolverEulerExact::sampleWaveSolution(const double& s,
-						  double& d,
-						  double& u,
-						  double& p) {
+void CRiemannSolverEulerExact::sampleWaveSolution(const double& s, double& d, double& u, double& p) {
   if (s <= um) {
     // Sampling point lies to the left of the contact discontinuity
     if (pm <= pl) {
@@ -235,10 +211,7 @@ void CRiemannSolverEulerExact::sampleWaveSolution(const double& s,
   }
 }
 
-void CRiemannSolverEulerExact::testSolver(const int& domlen,
-					  const double& diaph,
-					  const int& cells,
-					  const double& timeout) {
+void CRiemannSolverEulerExact::testSolver(const int& domlen, const double& diaph, const int& cells, const double& timeout) {
   computeGammaConstants();
   computeSoundSpeeds();
   bool ppc = testForVacuum();
