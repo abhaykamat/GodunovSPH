@@ -3,52 +3,70 @@
 
 #include "riemann.h"
 
-// =======================
-// CRiemannSolverEulerBase
-// =======================
 
-CRiemannSolverEulerBase::CRiemannSolverEulerBase(const double& _dl, const double& _ul, const double& _pl, const double& _dr, const double& _ur, const double& _pr, const double& _gamma)
-						 : dl(_dl), ul(_ul), pl(_pl), dr(_dr), ur(_ur), pr(_pr), gamma(_gamma) {}
+// ===========
+// StateVector
+// ===========
 
-CRiemannSolverEulerBase::~CRiemannSolverEulerBase() {}
+StateVector::StateVector(const double& density,
+			 const double& velocity,
+			 const double& pressure) {
+  state[0] = density;
+  state[1] = velocity;
+  state[2] = pressure;
+} 
 
-void CRiemannSolverEulerBase::computeGammaConstants() {
-  g1 = (gamma - 1.0)/(2.0*gamma);
-  g2 = (gamma + 1.0)/(2.0*gamma);
-  g3 = 2.0*gamma/(gamma - 1.0);
-  g4 = 2.0/(gamma - 1.0);
-  g5 = 2.0/(gamma + 1.0);
-  g6 = (gamma - 1.0)/(gamma + 1.0);
-  g7 = (gamma - 1.0)/2.0;
-  g8 = gamma - 1.0;
+const double StateVector::getDensity() {
+  return state[0];
 }
 
-void CRiemannSolverEulerBase::sampleWaveSolution(const double& s, double& d, double& u, double& p) {}
-
-void CRiemannSolverEulerBase::testSolver(const int& domlen, const double& diaph, const int& cells, const double& timeout) {}
-
-// ========================
-// CRiemannSolverEulerExact
-// ========================
-
-CRiemannSolverEulerExact::CRiemannSolverEulerExact(const double& _dl, const double& _ul, const double& _pl, const double& _dr, const double& _ur, const double& _pr,const double& _gamma)
-						   : CRiemannSolverEulerBase(_dl, _ul, _pl, _dr, _ur, _pr, _gamma) {}
-
-CRiemannSolverEulerExact::~CRiemannSolverEulerExact() {}
-
-void CRiemannSolverEulerExact::computeSoundSpeeds() {
-  cl = sqrt(gamma * pl / dl);
-  cr = sqrt(gamma * pr / dr);
+const double StateVector::getVelocity() {
+  return state[1];
 }
 
-bool CRiemannSolverEulerExact::testForVacuum() {
+const double StateVector::getPressure() {
+  return state[2];
+}
+
+
+// ======================
+// RiemannSolverEulerBase
+// ======================
+
+RiemannSolverEulerBase::RiemannSolverEulerBase(const StateVector& _left_state,
+					       const StateVector& _right_state) :
+  left_state(_left_state), right_state(_right_state) {}
+
+const StateVector StateVector::getLeftSate() {
+  return left_state;
+}
+
+const StateVector StateVector::getRightState() {
+  return right_state;
+}
+
+StateVector RiemannSolverEulerBase::sampleWaveSolution(const double& wave_speed) {}
+
+
+// =======================
+// RiemannSolverEulerExact
+// =======================
+
+RiemannSolverEulerExact::RiemannSolverEulerExact() : RiemannSolverEulerBase(_left_state, _right_state) {}
+
+void RiemannSolverEulerExact::computeSoundSpeeds() {
+  left_speed_of_sound = sqrt(gamma * pl / dl);
+  right_speed_of_sound = sqrt(gamma * pr / dr);
+}
+
+bool RiemannSolverEulerExact::testForVacuum() {
   if (g4 * (cl + cr) <= (ur - ul)) {
     return true;
   }
   return false;
 }
 
-void CRiemannSolverEulerExact::computePressureFunction(double& f, double& fd, const double& p, const double& dk, const double& pk, const double& ck) {
+void RiemannSolverEulerExact::computePressureFunction(double& f, double& fd, const double& p, const double& dk, const double& pk, const double& ck) {
   if (p <= pk) {   // Rarefaction wave
     double prat = p/pk;
     f = g4 * ck * (pow(prat, g1) - 1.0);
@@ -62,7 +80,8 @@ void CRiemannSolverEulerExact::computePressureFunction(double& f, double& fd, co
   }
 }
 
-void CRiemannSolverEulerExact::computeGuessPressure(double& p_start) {
+double RiemannSolverEulerExact::computeGuessPressure(const double& p_start) {
+  double p_iter = p_start;
   double q_user = 2.0;
 
   // Compute guess pressure from PVRS Riemann Solver
@@ -75,7 +94,7 @@ void CRiemannSolverEulerExact::computeGuessPressure(double& p_start) {
 
   if ((q_max <= q_user) && (p_min <= ppv && ppv <= p_max)) {   
     // Select PVRS Riemann solver
-    p_start = ppv;
+    p_iter = ppv;
   } else {
     if (ppv <= p_min) {   
       // Select Two-Rarefaction Riemann solver
@@ -83,25 +102,26 @@ void CRiemannSolverEulerExact::computeGuessPressure(double& p_start) {
       double um = (pq*ul/cl + ur/cr + g4*(pq - 1.0))/(pq/cl + 1.0/cr);
       double ptl = 1.0 + g7*(ul - um)/cl;
       double ptr = 1.0 + g7*(um - ur)/cr;
-      p_start = 0.5*(pl*pow(ptl, g3) + pr*pow(ptr, g3));
+      p_iter = 0.5*(pl*pow(ptl, g3) + pr*pow(ptr, g3));
     } else {              
       // Select Two-Shock Riemann solver with PVRS as estimate
       double gel = sqrt((g5/dl)/(g6*pl + ppv));
       double ger = sqrt((g5/dr)/(g6*pr + ppv));
-      p_start = (gel*pl + ger*pr - (ur - ul))/(gel + ger); 
+      p_iter = (gel*pl + ger*pr - (ur - ul))/(gel + ger); 
     }
   }
+
+  return p_iter;
 }
 
-void CRiemannSolverEulerExact::computePressureVelocityStar() {
-  double tol_pre = 1.0e-6;
-  int nr_iter = 20;
+void RiemannSolverEulerExact::computePressureVelocityStar() {
+  const double tol_pre = 1.0e-6;
+  const int nr_iter = 20;
 
-  double p_start = 0.0;
-  computeGuessPressure(p_start);
+  const double p_start = 0.0;
+  double p_old = computeGuessPressure(p_start);
 
-  double p_old = p_start;
-  double u_diff = ur - ul;
+  const double u_diff = ur - ul;
   double fl, fr, fld, frd = 0.0;
   double change = 0.0;
 
@@ -124,13 +144,13 @@ void CRiemannSolverEulerExact::computePressureVelocityStar() {
   um = 0.5*(ul + ur + fr - fl);
 }
 
-void CRiemannSolverEulerExact::sampleWaveSolution(const double& s, double& d, double& u, double& p) {
-  if (s <= um) {
+void RiemannSolverEulerExact::sampleWaveSolution(const double& wave_speed) {
+  if (wave_speed <= um) {
     // Sampling point lies to the left of the contact discontinuity
     if (pm <= pl) {
       // Left rarefaction
       double shl = ul - cl;
-      if (s <= shl) {
+      if (wave_speed <= shl) {
 	// Sampled point is left data state
 	d = dl;
 	u = ul;
@@ -138,7 +158,7 @@ void CRiemannSolverEulerExact::sampleWaveSolution(const double& s, double& d, do
       } else {
 	double cml = (cl*pow((pm/pl),g1));
 	double stl = um - cml;
-	if (s > stl) {
+	if (wave_speed > stl) {
 	  // Sampled point is Star Left state
 	  d = dl*pow((pm/pl),(1.0/gamma));
 	  u = um;
@@ -155,7 +175,7 @@ void CRiemannSolverEulerExact::sampleWaveSolution(const double& s, double& d, do
       // Left shock
       double pml = pm/pl;
       double sl = ul - cl*sqrt(g2*pml + g1);
-      if (s <= sl) {
+      if (wave_speed <= sl) {
 	// Sampled point is left data state
 	d = dl;
 	u = ul;
@@ -173,7 +193,7 @@ void CRiemannSolverEulerExact::sampleWaveSolution(const double& s, double& d, do
       // Right shock
       double pmr = pm/pr;
       double sr = ur + cr*sqrt(g2*pmr + g1);
-      if (s >= sr) {
+      if (wave_speed >= sr) {
 	// Sampled point is right data state
 	d = dr;
 	u = ur;
@@ -187,7 +207,7 @@ void CRiemannSolverEulerExact::sampleWaveSolution(const double& s, double& d, do
     } else {
       // Right rarefaction
       double shr = ur + cr;
-      if (s >= shr) {
+      if (wave_speed >= shr) {
 	// Sampled point is right data state
 	d = dr;
 	u = ur;
@@ -209,33 +229,10 @@ void CRiemannSolverEulerExact::sampleWaveSolution(const double& s, double& d, do
       }
     }
   }
+
+  StateVector state(d, u, p);
+  return state;
 }
 
-void CRiemannSolverEulerExact::testSolver(const int& domlen, const double& diaph, const int& cells, const double& timeout) {
-  computeGammaConstants();
-  computeSoundSpeeds();
-  bool ppc = testForVacuum();
-
-  ofstream outfile;
-  outfile.open("/vol/godunovsph/test/riemann_test.out");
-  if (ppc == false) {
-    outfile << "***Vacuum generated by data***" << endl << "***Program stopped***" << endl;
-  }
-
-  computePressureVelocityStar();
-
-  double dx = domlen/(double)cells;
-  double x_pos, s, ds, us, ps;
-
-  for (double i = 0; i < cells; i+=1.0) {
-    x_pos = ((i+1.0) - 0.5)*dx;
-    s = (x_pos - diaph)/timeout;
-
-    sampleWaveSolution(s, ds, us, ps);
-    outfile << x_pos << "\t" << ds << "\t" << us << "\t" << ps << endl;
-  }
-
-  outfile.close();
-}
 
 #endif

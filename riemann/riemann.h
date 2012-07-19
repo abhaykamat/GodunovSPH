@@ -6,81 +6,67 @@
 #include <cmath>
 #include <algorithm>
 
-using namespace std;
 
-class CRiemannSolverEulerBase {
-protected:
-  double dl, ul, pl, dr, ur, pr;
-  double gamma, g1, g2, g3, g4, g5, g6, g7, g8;
+class StateVector {
+ private:
+  std::vector<double> state(3);
+
+ public:
+  explicit StateVector(const double& density,
+		       const double& velocity,
+		       const double& pressure);
+  virtual ~StateVector();
+
+  const double getDensity() const;
+  const double getVelocity() const;
+  const double getPressure() const; 
+};
+
+
+class RiemannSolverEulerBase {
+ private:
+  StateVector left_state;
+  StateVector right_state;
+
+ public:
+  explicit RiemannSolverEulerBase(const StateVector& _left_state,
+				  const StateVector& _right_state);
+  virtual ~RiemannSolverEulerBase();
+
+  const StateVector getLeftState() const;
+  const StateVector getRightState() const;
   
-public:
-  CRiemannSolverEulerBase(const double& _dl,
-			  const double& _ul,
-			  const double& _pl,
-			  const double& _dr,
-			  const double& _ur,
-			  const double& _pr,
-			  const double& _gamma);
-  ~CRiemannSolverEulerBase();
-  
-  void computeGammaConstants();
-  
-  virtual void sampleWaveSolution(const double& s,    // Wave speed, s = x/t 
-				  double& d,          // Sampled density
-				  double& u,          // Sampled velocity
-				  double& p) = 0;     // Sampled pressure
+  virtual StateVector sampleWaveSolution(const double& wave_speed) = 0;
+};
 
-  virtual void testSolver(const int& domlen,            // Domain length
-			  const double& diaph,          // Initial discontinuity position
-			  const int& cells,             // Number of computing cells
-			  const double& timeout) = 0;   // Output time
-			  };
 
-class CRiemannSolverEulerExact : public CRiemannSolverEulerBase {
-protected:
+class RiemannSolverEulerExact : public RiemannSolverEulerBase {
+ private:
 
-  // Sound speeds
-  double cl;
-  double cr;
+  // Sounds speeds
+  double left_speed_of_sound;
+  double right_speed_of_sound;
 
-  // Pressure/Velocity in Star region
-  double pm;
-  double um;
+  // Pressure and Velocity in the Star Region
+  double pressure_star;
+  double velocity_star;
 
   void computeSoundSpeeds();
-
   bool testForVacuum();
-
   void computePressureFunction(double& f,
 			       double& fd,
 			       const double& p,
 			       const double& dk,
 			       const double& pk,
 			       const double& ck);
-
-  void computeGuessPressure(double& p_start);
-
+  double computeGuessPressure(const double& p_start);
   void computePressureVelocityStar();
+  
+ public:
+  explicit RiemannSolverEulerExact();
+  virtual ~RiemannSolverEulerExact();
 
-public:
-  CRiemannSolverEulerExact(const double& _dl,    // Left density state
-			   const double& _ul,    // Left velocity state
-			   const double& _pl,    // Left pressure state
-			   const double& _dr,    // Right density state
-			   const double& _ur,    // Right velocity state
-			   const double& _pr,    // Right pressure stat
-			   const double& _gamma);   // Ratio of specific heats
-  ~CRiemannSolverEulerExact();
-
-  virtual void sampleWaveSolution(const double& s,
-                                  double& d,
-                                  double& u,
-                                  double& p);
-
-  virtual void testSolver(const int& domlen,     // Domain length
-                          const double&diaph,    // Initial discontinuity position
-                          const int& cells,      // Number of computing cells
-                          const double&timeout); // Output time    
+  virtual StateVector sampleWaveSolution(const double& wave_speed);
 };
 
 #endif
