@@ -1,42 +1,25 @@
 #ifndef _RIEMANN_H
 #define _RIEMANN_H
 
-#include <iostream>
-#include <fstream>
 #include <cmath>
 #include <algorithm>
-
-
-class StateVector {
- private:
-  std::vector<double> state(3);
-
- public:
-  explicit StateVector(const double& density,
-		       const double& velocity,
-		       const double& pressure);
-  virtual ~StateVector();
-
-  const double getDensity() const;
-  const double getVelocity() const;
-  const double getPressure() const; 
-};
+#include "flow/flow.h"
 
 
 class RiemannSolverEulerBase {
  private:
-  StateVector left_state;
-  StateVector right_state;
+  flow::StateVector left_state;
+  flow::StateVector right_state;
 
  public:
   explicit RiemannSolverEulerBase(const StateVector& _left_state,
 				  const StateVector& _right_state);
   virtual ~RiemannSolverEulerBase();
 
-  const StateVector getLeftState() const;
-  const StateVector getRightState() const;
+  const flow::StateVector getLeftState() const;
+  const flow::StateVector getRightState() const;
   
-  virtual StateVector sampleWaveSolution(const double& wave_speed) = 0;
+  virtual flow::StateVector sampleWaveSolution(const double& wave_speed) = 0;
 };
 
 
@@ -66,7 +49,7 @@ class RiemannSolverEulerExact : public RiemannSolverEulerBase {
   explicit RiemannSolverEulerExact();
   virtual ~RiemannSolverEulerExact();
 
-  virtual StateVector sampleWaveSolution(const double& wave_speed);
+  virtual flow::StateVector sampleWaveSolution(const double& wave_speed);
 };
 
 #endif

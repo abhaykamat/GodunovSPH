@@ -4,51 +4,23 @@
 #include "riemann.h"
 
 
-// ===========
-// StateVector
-// ===========
-
-StateVector::StateVector(const double& density,
-			 const double& velocity,
-			 const double& pressure) {
-  state[0] = density;
-  state[1] = velocity;
-  state[2] = pressure;
-} 
-
-const double StateVector::getDensity() {
-  return state[0];
-}
-
-const double StateVector::getVelocity() {
-  return state[1];
-}
-
-const double StateVector::getPressure() {
-  return state[2];
-}
-
-
-// ======================
 // RiemannSolverEulerBase
 // ======================
 
-RiemannSolverEulerBase::RiemannSolverEulerBase(const StateVector& _left_state,
-					       const StateVector& _right_state) :
+RiemannSolverEulerBase::RiemannSolverEulerBase(const flow::StateVector& _left_state,
+					       const flow::StateVector& _right_state) :
   left_state(_left_state), right_state(_right_state) {}
 
-const StateVector StateVector::getLeftSate() {
+const flow::StateVector flow::StateVector::getLeftSate() {
   return left_state;
 }
 
-const StateVector StateVector::getRightState() {
+const flow::StateVector flow::StateVector::getRightState() {
   return right_state;
 }
 
-StateVector RiemannSolverEulerBase::sampleWaveSolution(const double& wave_speed) {}
+flow::StateVector RiemannSolverEulerBase::sampleWaveSolution(const double& wave_speed) {}
 
-
-// =======================
 // RiemannSolverEulerExact
 // =======================
 
@@ -144,7 +116,7 @@ void RiemannSolverEulerExact::computePressureVelocityStar() {
   um = 0.5*(ul + ur + fr - fl);
 }
 
-void RiemannSolverEulerExact::sampleWaveSolution(const double& wave_speed) {
+flow::StateVector RiemannSolverEulerExact::sampleWaveSolution(const double& wave_speed) {
   if (wave_speed <= um) {
     // Sampling point lies to the left of the contact discontinuity
     if (pm <= pl) {
@@ -230,7 +202,7 @@ void RiemannSolverEulerExact::sampleWaveSolution(const double& wave_speed) {
     }
   }
 
-  StateVector state(d, u, p);
+  flow::StateVector state(d, u, p);
   return state;
 }
 
