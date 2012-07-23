@@ -5,17 +5,22 @@ namespace flow {
   
   class StateVector {
     private:
-      std::vector<double> state(3);
+      std::vector<double> state(3);            // Conservative formulation
     
     public:
-      explicit StateVector(const double& density,
-	   		   const double& velocity,
-			   const double& pressure);
+      StateVector(const double& density,
+		  const double& u_velocity,
+		  const double& pressure);
       virtual ~StateVector();
     
       const double getDensity() const;
-      const double getVelocity() const;
-      const double getPressure() const; 
+      const double getUVelocity() const;
+      const double getUMomentum() const;
+      const double getPressure() const;
+      const double getTotalEnergy() const;
+
+      void setPrimitives(const double& density, const double& u_velocity, const double& pressure);
+      void setConservatives(const double& density, const double& u_momentum, const double& total_energy);
   };
 
   class GammaConstants {
