@@ -1,7 +1,7 @@
 #ifndef _MESH_CPP
 #define _MESH_CPP
 
-#include "mesh/mesh.h"
+#include "mesh.h"
 
 namespace mesh {
 

@@ -1,6 +1,7 @@
 #ifndef _MESH_H
 #define _MESH_H
 
+#include "flow/flow.h"
 #include <vector>
 
 namespace mesh {

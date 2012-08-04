@@ -1,11 +1,27 @@
 #ifndef _FLOW_H
 #define _FLOW_H
 
+#include <vector>
+
 namespace flow {
+
+  namespace gammaconst {
+    
+    const double gamma = 1.4;
+    const double g1 = (gamma - 1.0)/(2.0*gamma);
+    const double g2 = (gamma + 1.0)/(2.0*gamma);
+    const double g3 = 2.0*gamma/(gamma - 1.0);
+    const double g4 = 2.0/(gamma - 1.0);
+    const double g5 = 2.0/(gamma + 1.0);
+    const double g6 = (gamma - 1.0)/(gamma + 1.0);
+    const double g7 = (gamma - 1.0)/2.0;
+    const double g8 = gamma - 1.0;
+
+  }
   
   class StateVector {
     private:
-      std::vector<double> state(3);            // Conservative formulation
+      std::vector<double> state;            // Conservative formulation
     
     public:
       StateVector(const double& density,
@@ -19,29 +35,12 @@ namespace flow {
       const double getPressure() const;
       const double getTotalEnergy() const;
 
-      void setPrimitives(const double& density, const double& u_velocity, const double& pressure);
-      void setConservatives(const double& density, const double& u_momentum, const double& total_energy);
-  };
-
-  class GammaConstants {
-    private:
-      double gamma, g1, g2, g3, g4, g5, g6, g7, g8;
-      GammaConstants(const GammaConstants& rhs);
-      GammaConstants& operator=(const GammaConstants& rhs);
-      
-    public:
-      explicit GammaConstants(const double& _gamma);
-      ~GammaConstants();
-      
-      const double getGamma() const;
-      const double getG1() const;
-      const double getG2() const;
-      const double getG3() const;
-      const double getG4() const;
-      const double getG5() const;
-      const double getG6() const;
-      const double getG7() const;
-      const double getG8() const;
+      void setPrimitives(const double& density, 
+			 const double& u_velocity, 
+			 const double& pressure);
+      void setConservatives(const double& density, 
+			    const double& u_momentum, 
+			    const double& total_energy);
   };
   
 }

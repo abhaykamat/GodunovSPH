@@ -3,7 +3,8 @@
 
 #include <cmath>
 #include <algorithm>
-#include "flow/flow.h"
+#include <fstream>
+#include "../flow/flow.h"
 
 namespace riemann {
 
@@ -13,8 +14,8 @@ namespace riemann {
       flow::StateVector right_state;
 
     public:
-      RiemannSolverEulerBase(const StateVector& _left_state,
-			     const StateVector& _right_state);
+      RiemannSolverEulerBase(const flow::StateVector& _left_state,
+			     const flow::StateVector& _right_state);
       virtual ~RiemannSolverEulerBase();
 
       const flow::StateVector getLeftState() const;
@@ -25,14 +26,17 @@ namespace riemann {
 
   class RiemannSolverEulerExact : public RiemannSolverEulerBase {
     private:
+      // Convenience members for left and right states 
+      double dl, ul, pl, dr, ur, pr;
+
       // Sounds speeds
-      double left_speed_of_sound;
-      double right_speed_of_sound;
+      double cl, cr;
 
       // Pressure and Velocity in the Star Region
-      double pressure_star;
-      double velocity_star;
+      double pm, um;
 
+      void init(const flow::StateVector& _left_state, 
+		const flow::StateVector& _right_state);
       void computeSoundSpeeds();
       bool testForVacuum();
       void computePressureFunction(double& f,
@@ -45,11 +49,15 @@ namespace riemann {
       void computePressureVelocityStar();
   
     public:
-      RiemannSolverEulerExact(const StateVector& _left_state,
-			      const StateVector& _right_state);
+      RiemannSolverEulerExact(const flow::StateVector& _left_state,
+			      const flow::StateVector& _right_state);
       virtual ~RiemannSolverEulerExact();
 
       virtual flow::StateVector sampleWaveSolution(const double& wave_speed);
+      void testSolver(const double& domlen,
+		      const double& diaph,
+		      const int& cells,
+		      const double& timeout);
   };
 
 }

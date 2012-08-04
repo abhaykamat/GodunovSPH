@@ -1,3 +1,4 @@
+flowapp
 *.pyc
 *~
 /settings.py
