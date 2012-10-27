@@ -1,0 +1,14 @@
+grpscheme: main.cpp scheme.o riemann.o mesh.o flow.o
+	g++ -o grpscheme main.cpp scheme.o
+
+scheme.o: scheme/scheme.cpp riemann.o mesh.o flow.o
+	g++ scheme/scheme.cpp riemann.o
+
+riemann.o: riemann/riemann.cpp mesh.o flow.o
+	g++ riemann/riemann.cpp mesh.o
+
+mesh.o: mesh/mesh.cpp flow.o
+	g++ mesh/mesh.cpp flow.o
+
+flow.o: flow/flow.cpp
+	g++ flow/flow.cpp

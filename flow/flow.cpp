@@ -77,27 +77,27 @@ namespace flow {
     state[2] = total_energy;
   }  
 
-  namespace euler {
-    
-    StateVector calcEulerFluxFromPrimitives(const double& density,
-					    const double& u_velocity,
-					    const double& pressure) {
-      double energy = calcTotalEnergyFromPrimitives(density, u_velocity, pressure);
-      return StateVector state(density*u_velocity, 
-			       pressure + density*u_velocity*u_velocity,
-			       (energy + pressure/density)*u_velocity);
-    }
-
-    StateVector calcEulerFluxFromConservatives(const double& density,
-					       const double& u_momentum,
-					       const double& total_energy) {
-      double pressure = calcPressureFromConservatives(density, u_momentum, total_energy);
-      return StateVector state(u_momentum,
-			       pressure + u_momentum*u_momentum/density,
-			       (total_energy + pressure/density)*u_momentum/density);
-    }
-    
-
+  // Euler Fluxes
+  // ============
+  
+  StateVector calcEulerFluxFromPrimitives(const double& density,
+					  const double& u_velocity,
+					  const double& pressure) {
+    double energy = calcTotalEnergyFromPrimitives(density, u_velocity, pressure);
+    StateVector state(density*u_velocity, 
+		      pressure + density*u_velocity*u_velocity,
+		      (energy + pressure/density)*u_velocity);
+    return state;
+  }
+  
+  StateVector calcEulerFluxFromConservatives(const double& density,
+					     const double& u_momentum,
+					     const double& total_energy) {
+    double pressure = calcPressureFromConservatives(density, u_momentum, total_energy);
+    StateVector state(u_momentum,
+		      pressure + u_momentum*u_momentum/density,
+		      (total_energy + pressure/density)*u_momentum/density);
+    return state;
   }
 
 }

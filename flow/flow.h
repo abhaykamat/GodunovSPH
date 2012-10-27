@@ -24,6 +24,7 @@ namespace flow {
       std::vector<double> state;            // Conservative formulation
     
     public:
+      StateVector();
       StateVector(const double& density,
 		  const double& u_velocity,
 		  const double& pressure);
@@ -42,6 +43,10 @@ namespace flow {
 			    const double& u_momentum, 
 			    const double& total_energy);
   };
+
+  StateVector calcEulerFluxFromConservatives(const double& density,
+					     const double& u_momentum,
+					     const double& total_energy);
   
 }
 

@@ -1,7 +1,7 @@
 #ifndef _MESH_H
 #define _MESH_H
 
-#include "flow/flow.h"
+#include "../flow/flow.h"
 #include <vector>
 
 namespace mesh {
@@ -18,9 +18,11 @@ namespace mesh {
 
     public:
       Mesh1D(int _N, const double& _width);
-      
-      StateVector& meshPoint(const int& j);
-      StateVector& slopePoint(const int& j);
+
+      int size() const;
+      double cell_size(const int& i) const;
+      flow::StateVector& meshPoint(const int& j);
+      flow::StateVector& slopePoint(const int& j);
   };
 
 }
