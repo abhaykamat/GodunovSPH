@@ -30,6 +30,10 @@ namespace flow {
   // StateVector
   // ===========
 
+  StateVector::StateVector() {
+    state.resize(3, 0.0);
+  }
+
   StateVector::StateVector(const double& density,
 			   const double& u_velocity,
 			   const double& pressure) {
